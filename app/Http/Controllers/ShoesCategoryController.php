@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BrandModel;
 use App\Models\CategoryModel;
+use App\Models\ShoeSizeModel;
 use Illuminate\Support\Facades\File;
 use App\Models\ShoesModel;
 use Illuminate\Http\Request;
@@ -52,9 +53,9 @@ class ShoesCategoryController extends Controller
         $valid = $request->validate([
             "name" => "required",
             "description" => "required",
-            "avatar" => "required|image|mimes:jpg,png,jpeg,gif,svg|max:2048|dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000",
+            // "avatar" => "required|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
             "price" => "required|numeric|gt:0",
-            "quantity" => "required|integer|min:0",
+            "gender" => "required",
             "brand" => 'required|not_in:0',
             "category" => 'required|not_in:0',
 
@@ -64,7 +65,11 @@ class ShoesCategoryController extends Controller
         $shoes->desc_shoes = $request->description;
         $shoes->price = $request->price;
         $shoes->avatar = $request->avatar;
-        $shoes->quantity = $request->quantity;
+        if($request->gender != ""&&strlen($request->gender)>0){
+            $shoes->avatar = $request->avatar;
+        }else{
+            $shoes->avatar = "null";
+        }
         $shoes->category_id = $request->category;
         $shoes->brand_id = $request->brand;
 
@@ -122,16 +127,16 @@ class ShoesCategoryController extends Controller
         $valid = $request->validate([
             "name" => "required",
             "description" => "required",
-            "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048|dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000",
+            "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
             "price" => "required|numeric|gt:0",
-            "quantity" => "required|integer|min:0",
 
         ]);
         $shoes = ShoesModel::find($id);
         $shoes->name = $request->name;
         $shoes->desc_shoes = $request->description;
         $shoes->price = $request->price;
-        $shoes->quantity = $request->quantity;
+            $shoes->gender = $request->gender;
+       
         $shoes->category_id = $request->category;
         $shoes->brand_id = $request->brand;
 
@@ -164,5 +169,51 @@ class ShoesCategoryController extends Controller
 
         return redirect()->action([ShoesCategoryController::class, "index"]);
 
+    }
+    public function shoesSize()
+    {
+        $pageTitle = "Thêm size và số lượng giày";
+        $size = ShoeSizeModel::join("shoes","shoes_size.shoes_id","=","shoes.id")->get();
+
+        return view("admin.shoes.shoesSize",compact("pageTitle","size"));
+    }
+    public function createSizeShoes()
+    {
+        $pageTitle = "Thêm size và số lượng giày";
+        $shoes = ShoesModel::all();
+        return view("admin.shoes.addsizeshoes",compact("pageTitle","shoes"));
+    }
+    public function saveSizeShoes(Request $request)
+    {
+        $request->validate([
+            "id" => "required",
+            "size" => "required",
+            "quantity" => "required|numeric|gt:0",
+
+        ]);
+        $size = new ShoeSizeModel();
+        $size->shoes_id = $request->id;
+        $size->size = $request->size;
+        $size->quantity = $request->quantity;
+        $size->save();
+        return redirect()->action([ShoesCategoryController::class,"shoesSize"]);
+
+    }
+    public function editSizeShoes($id)
+    {
+        $pageTitle = "Cập nhật size và số lượng giày";
+        $shoes = ShoesModel::all();
+        $size = ShoeSizeModel::FindOrFail($id);
+        return view("admin.shoes.editShoesSize",compact("pageTitle","shoes","size"));
+    }
+    public function updateSizeShoes($id,Request $r)
+    {
+        $size = ShoeSizeModel::FindOrFail($id);
+        $size->shoes_id = $r->id;
+        $size->size = $r->id;
+        $size->quantity = $r->quantity;
+        $size->update();
+        Session()->flash("success", "Cập nhật thành công!!!");
+        return redirect()->action([ShoesCategoryController::class,"shoesSize"]);
     }
 }

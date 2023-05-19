@@ -54,7 +54,7 @@ class BrandController extends Controller
         ]);
         $brand = new BrandModel();
         $brand->brand_name = $request->name;
-        $brand->avatar = $request->avatar;
+        $brand->b_avatar = $request->avatar;
         $brand->description = $request->description;
         $brand->address = $request->address;
 
@@ -65,7 +65,7 @@ class BrandController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '.' . $extension;
             $file->move('public/image/', $filename);
-            $brand->avatar = $filename;
+            $brand->b_avatar = $filename;
         }
         $brand->save();
         Session()->flash("success", "Thêm brand thành công");
@@ -127,7 +127,7 @@ class BrandController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '.' . $extension;
             $file->move('public/image/', $filename);
-            $brand->avatar = $filename;
+            $brand->b_avatar = $filename;
         }
         Session()->flash("success", "Cập nhật brand thành công");
 

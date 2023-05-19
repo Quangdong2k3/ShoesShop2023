@@ -45,7 +45,7 @@ class EmployeeController extends Controller
             "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
             "fullname"=>"required|string",
             "username"=>"required|string",
-            "email"=>"required|email|unique:employee",
+            "email"=>["required","email",Rule::unique("employee")],
             'password' => [
                 'required',
                 'string',
@@ -128,7 +128,7 @@ class EmployeeController extends Controller
             "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
             "fullname"=>"required|string",
             "username"=>"required|string",
-            "email"=>"required|email|max:100|unique:employee,email",
+            "email"=>["required","email",Rule::unique("employee")->ignore($id)],
             'password' => [
                 'required',
                 'string',
@@ -164,7 +164,7 @@ class EmployeeController extends Controller
         }
         Session()->flash("success", "Cập nhật nhân viên thành công");
 
-        $emp->save();
+        $emp->update();
         return redirect()->action([EmployeeController::class, "index"]);
     }
 

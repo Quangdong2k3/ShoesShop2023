@@ -37,7 +37,7 @@
 						<h2 class="mb-4">Thank you for purchasing, Your order is complete</h2>
 						<p>
 							<a href="/"class="btn btn-primary btn-outline-primary">Home</a>
-							<a href="shop.html"class="btn btn-primary btn-outline-primary"><i class="icon-shopping-cart"></i> Continue Shopping</a>
+							<a href="/home/all_product"class="btn btn-primary btn-outline-primary"><i class="icon-shopping-cart"></i> Continue Shopping</a>
 						</p>
 					</div>
 				</div>
