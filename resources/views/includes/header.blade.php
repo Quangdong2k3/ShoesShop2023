@@ -210,13 +210,13 @@
                             <li class="active"><a href="/">Home</a></li>
                             <li class="has-dropdown">
                                 <a href="{{ route('men') }}">Men</a>
-                                <ul class="dropdown">
+                                <!-- <ul class="dropdown">
                                     <li><a href="{{ route('product_detail') }}">Product Detail</a></li>
                                     <li><a href="{{ route('cart') }}">Shopping Cart</a></li>
                                     <li><a href="{{ route('checkout') }}">Checkout</a></li>
                                     <li><a href="{{ route('order_complete') }}">Order Complete</a></li>
                                     <li><a href="{{ route('add_to_wishlist') }}">Wishlist (@if(request()->cookie('cusId') ) {{session('count_cart')}} @else{{0}}@endif)</a></li>
-                                </ul>
+                                </ul> -->
                             </li>
                             <li><a href="{{ route('women') }}">Women</a></li>
                             <li><a href="{{ route('about') }}">About</a></li>

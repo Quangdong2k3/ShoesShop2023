@@ -10,5 +10,5 @@ class EmployeeModel extends Model
     use HasFactory;
     protected $table = "employee";
     protected $primaryKey = "emp_id";
-    protected $foreignKey = "role_id";
+    // protected $foreignKey = "role_id";
 }

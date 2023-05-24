@@ -68,7 +68,7 @@
     <!-- /.row -->
     <!-- Main row -->
     <!-- Left col -->
-    <form class="row" id="StatisticForm">
+    <form class="row" id="StatisticForm" action="/statistic/filter" method="get">
       @csrf
 
       <div class="form-group mx-3">
@@ -81,7 +81,7 @@
             </span>
           </span>
         </div>
-        <span class="text-danger">{{$errors->first("dob")}}</span>
+        <span class="text-danger">{{$errors->first("fromdate")}}</span>
 
       </div>
       <div class="form-group">
@@ -94,26 +94,17 @@
             </span>
           </span>
         </div>
-        <span class="text-danger">{{$errors->first("dob")}}</span>
+        <span class="text-danger">{{$errors->first("todate")}}</span>
 
       </div>
       <input type="submit" id="filter" class="btn btn-primary mx-3 d-block" value="Lọc Kết Quả" />
 
     </form>
+    @if(Session::get("fromday"))
 
-    <table id="datatable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Customer</th>
-          <th>Total_payment</th>
-        </tr>
-
-      </thead>
-      <tbody>
-
-      </tbody>
-    </table>
+@yield("statistic")
+  
+@endif
 
     <!-- right col -->
     <!-- /.row (main row) -->
@@ -129,7 +120,7 @@
 
 @section("javascript")
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script>
+<!-- <script>
   $(document).ready(function() {
 
     $.ajaxSetup({
@@ -164,7 +155,7 @@
 
 
 
-</script>
+</script> -->
 
 
 @endsection

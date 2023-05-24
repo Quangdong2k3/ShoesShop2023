@@ -77,7 +77,7 @@ class HomeController extends Controller
     }
     public function MenShoes()
     {
-        $shoes = ShoesModel::where("gender", "=", "1")->get();
+        $shoes = ShoesModel::where("gender", "=", 1)->orWhere("gender", "=", 2)->get();
         return view("client.men", compact("shoes"));
     }
 
@@ -146,6 +146,7 @@ class HomeController extends Controller
         Cookie::queue(Cookie::forget("cusAvatar"));
 
         Cookie::queue(Cookie::forget("countCart"));
+        
         session()->forget('url_page');
         session()->forget('sumOrder');
         // session()->regenerate();

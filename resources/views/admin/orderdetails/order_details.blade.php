@@ -3,20 +3,19 @@
 @if($mess = Session::get("success"))
 <p class="alert alert-success">{{$mess}}</p>
 @endif
-<a href="/admin/categories/addcategory" class="btn btn-outline-primary mb-3">Add Employee</a>
 
 <section class="content">
     <div class="container-fluid">
     <a class="btn btn-success" href="{{route('Order')}}"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></a>
         <div class="row">
-            <div class="col-md">
+            <div class="col-md">    
             @foreach($orders as $row)
             
                 <div class="card">
 
                     <div class="card-header d-flex justify-content-between">
 
-                        
+                    
                     @if($row->status===1)
                         <form action="/order_status/{{$row->id}}" style="margin-top: 50px !important;" method="post">
                             @csrf

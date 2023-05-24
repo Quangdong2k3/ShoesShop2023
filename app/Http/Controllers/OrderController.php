@@ -50,7 +50,7 @@ class OrderController extends Controller
         // $order = OrderModel::join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->join("order","orderdetail_id","=","order.id")->whereRaw("order.customer_id=".$id)->get();
         $order = Order::whereRaw("order.customer_id=".$id)->get();
         foreach($order as $r){
-            $orders = OrderModel::join("order","orderdetail.order_id","=","order.id")->join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("orderstatus","order.status","=","orderstatus.status_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->whereRaw("customer_id=".$id)->get(["order.id","shoes.name","orderdetail_id","shoes.price","order.status","status_id","shoes.price","shoes_size.size","shoes_size.quantity","orderstatus.description"]);
+            $orders = OrderModel::join("order","orderdetail.order_id","=","order.id")->join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("orderstatus","order.status","=","orderstatus.status_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->whereRaw("customer_id=".$id)->orderBy("orderdetail.orderdetail_id")->get(["order.id","shoes.name","orderdetail_id","shoes.price","order.status","status_id","shoes.price","shoes_size.size","shoes_size.quantity","orderstatus.description"]);
 
             $order_status = Order::join("orderstatus","order.status","=","orderstatus.status_id")->whereRaw("order.status=". $r->status)->get();
         }

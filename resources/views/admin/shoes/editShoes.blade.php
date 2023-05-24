@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <img class="w-100" src="{{asset('public/image/'.$shoes->avatar)}}" alt="">
+                                <img class="w-25" src="{{asset('public/image/'.$shoes->avatar)}}" alt="">
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputPassword1">Description</label>

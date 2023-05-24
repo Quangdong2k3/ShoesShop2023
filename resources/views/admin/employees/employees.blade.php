@@ -3,7 +3,7 @@
 @if($mess = Session::get("success"))
 <p class="alert alert-success">{{$mess}}</p>
 @endif
-<a href="/admin/categories/addcategory" class="btn btn-outline-primary mb-3">Add Employee</a>
+<a href="/admin/employees/addEmployee" class="btn btn-outline-primary mb-3">Add Employee</a>
 
 <section class="content">
     <div class="container-fluid">

@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShoesCategoryController;
@@ -47,6 +48,8 @@ Route::group(['middleware' => ['AdminLogin']], function () {
     Route::get('/admin/discount/edit/{id}
     ', [DiscountController::class, "edit"])->name('discount.edit');
     Route::delete('/admin/discount/deleteDiscount/{id}', [DiscountController::class, "destroy"])->name('discount.delete');
+    //statistic
+    Route::get('/statistic/filter', [AdminController::class, "statisticFilter"]);
    
 });
 Route::group(['middleware' => ['AdminLogedIn']], function () {
@@ -137,6 +140,9 @@ Route::group(["middleware" => ['AdminRole']], function () {
 Route::get('/admin/customers/showCustomers',    [CustomerController::class, "index"])->name('Customers');
 
 Route::delete('/admin/customers/deleteCustomer/{id}',    [CustomerController::class, "destroy"]);
+
+Route::get('/mail/sendMail',    [MailController::class, "sendMail"]);
+
 
 
 
@@ -253,8 +259,7 @@ Route::group(["middleware" => ["CustomerLogin"]], function () {
     Route::patch('/Cart/UpdateCart/{id}', [Cart::class, "UpdateCart"]);
     Route::delete('/Cart/DeleteCart/{id}', [Cart::class, "DeleteCart"]);
 
-    //statistic
-    Route::post('/statistic/filter', [AdminController::class, "statisticFilter"]);
+    
 });
 
 Route::post('/Customer/SignIn', [HomeController::class, "SignIn"]);

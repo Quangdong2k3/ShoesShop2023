@@ -33,18 +33,47 @@ class AdminController extends Controller
         $cus_count = CustomerModel::all()->count();
         $admin_count = EmployeeModel::whereRaw("role_id=1")->count();
         $emp_count = EmployeeModel::whereRaw("role_id=0")->count();
+
         
         return view("admin.statistic.index",compact("order_count","cus_count","admin_count","emp_count"))->with("pageTitle", "Doanh thu cửa hàng");
     }
     
     public function statisticFilter(Request $request)
     {
+        
+        $request->validate([
+            "fromdate" => 'required|before:todate',
+            "todate" => "required|after:fromdate",
+        ],[
+            "fromdate.required" => "Ngày bắt đầu không được để trống",
+        "todate.required" => "Ngày kết thúc không được để trống",
+        ]);
         $from = Carbon::parse($request->fromdate)->format("Y-m-d");
         $to = Carbon::parse($request->todate)->format("Y-m-d");
-        $filter = OrderModel::get(["id","status","note"]);
 
-        $q = Order::select(["status","customer_id","total_payment"])->get();
-        return response()->json(["data"=>$q]);
+        $emp = EmployeeModel::FindOrFail(request()->cookie("id"));
+        Cookie::queue("admAvatar", $emp->avatar, 60);
+        $order_count = Order::whereRaw("status=1")->count();
+        $cus_count = CustomerModel::all()->count();
+        $admin_count = EmployeeModel::whereRaw("role_id=1")->count();
+        $emp_count = EmployeeModel::whereRaw("role_id=0")->count();
+        $statistic = Order::all();
+        $customer = CustomerModel::all();
+        session()->flash("fromday",$request->fromdate);
+        session()->flash("today",$request->todate);
+
+        // foreach($statistic as $r){
+        //     foreach($customer as $c){
+        //         if($r->customer_id===$c->id){
+        //             $sum = Order::whereBetween('created_at',[$from,$to])->whereRaw("customer_id=".$r->customer_id)->whereRaw('status=4')->groupBy("order.customer_id")->select(["*",DB::raw('sum(total_payment) as sum_pay')])->get();
+        //         }
+                
+        //     }
+        // }
+        // die($sum);
+        $sum = Order::whereBetween('created_at',[$from,$to])->whereRaw('status=4')->get([DB::raw('sum(total_payment) as sum_pay')]);
+
+        return view("admin.statistic.filterStatistic",compact("sum","order_count","cus_count","admin_count","emp_count"))->with("pageTitle", "Doanh thu cửa hàng");
         // whereBetween('created',$from,$to)
         
         // return datatables($filter)->make(true);
@@ -69,7 +98,7 @@ class AdminController extends Controller
         ]);
         $email = $request->email;
         $password = ($request->password);
-        $emp = DB::table('employee')->where("email", $email)->where("password", $password)->first();
+        $emp = DB::table('employee')->where("email", $email)->where("password", md5($password))->first();
         // if ($emp != null) {
             $minutes = 60;
             Cookie::queue("name", $emp->username, $minutes);

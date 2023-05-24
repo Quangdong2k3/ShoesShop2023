@@ -125,10 +125,10 @@ class EmployeeController extends Controller
         //     "description.required" => "Description không được để trống",
         // ];
         $valid = $request->validate([
-            "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
+            "avatar" => "nullable|image|mimes:jpg,png,jpeg,gif,svg",
             "fullname"=>"required|string",
             "username"=>"required|string",
-            "email"=>["required","email",Rule::unique("employee")->ignore($id)],
+            "email"=>"required|email|unique:employee,email,".$id.',emp_id',
             'password' => [
                 'required',
                 'string',
@@ -143,6 +143,7 @@ class EmployeeController extends Controller
             "gen"=>"required|in:1,0"
 
         ]);
+
         $emp->username = $request->username;
         $emp->fullname = $request->fullname;
         $emp->email = $request->email;

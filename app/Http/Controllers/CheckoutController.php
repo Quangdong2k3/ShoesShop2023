@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\HelloMail;
 use App\Models\CartModel;
+use App\Models\CustomerModel;
+use App\Models\EmployeeModel;
 use App\Models\Order;
 use App\Models\OrderModel;
 use App\Models\ShoesModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -21,7 +25,7 @@ class CheckoutController extends Controller
     {
         $count_cart = CartModel::where("customer_id", "=", request()->cookie("cusId"))->get();
         $count_cart = $count_cart->count();
-        if($count_cart===0){
+        if ($count_cart === 0) {
             session()->flash("err", "Không có sản phẩm nào trong Giỏ hàng!!! Mời bạn thêm sản phẩm vào giỏ hàng");
             return redirect()->back();
         }
@@ -35,7 +39,7 @@ class CheckoutController extends Controller
     }
     public function checkoutThree(Request $request, $id)
     {
-        
+
         echo "<pre>";
         print_r(request()->all());
         echo "</pre>";
@@ -75,12 +79,10 @@ class CheckoutController extends Controller
                 $orderdetail->save();
             }
             foreach ($cart as $cs) {
-                DB::statement('UPDATE SHOES_SIZE S INNER JOIN CART C ON S.size_id = C.shoes_size_id SET s.quantity = s.quantity-c.quantity_cart WHERE SIZE_ID ='.$cs->shoes_size_id );
-                DB::statement('DELETE FROM cart WHERE cart_id ='. $cs->cart_id);
-                
+                DB::statement('UPDATE SHOES_SIZE S INNER JOIN CART C ON S.size_id = C.shoes_size_id SET s.quantity = s.quantity-c.quantity_cart WHERE SIZE_ID =' . $cs->shoes_size_id);
+                DB::statement('DELETE FROM cart WHERE cart_id =' . $cs->cart_id);
             }
-        return redirect()->action([CheckoutController::class, "Done"]);
-
+            return redirect()->action([CheckoutController::class, "Done"]);
         } else {
             //dùng thông tin mới
             $order = new Order();
@@ -104,67 +106,74 @@ class CheckoutController extends Controller
                 $orderdetail->save();
             }
             foreach ($cart as $cs) {
-                DB::statement('DELETE FROM cart WHERE cart_id ='. $cs->cart_id);
-                
+                DB::statement('DELETE FROM cart WHERE cart_id =' . $cs->cart_id);
             }
-        return redirect()->action([CheckoutController::class, "Done"]);
 
+            //gửi mail
+           
+
+            return redirect()->action([CheckoutController::class, "Done"]);
         }
     }
     public function Done()
     {
-      
+
         $count_cart = CartModel::where("customer_id", "=", request()->cookie("cusId"))->get();
         $count_cart = $count_cart->count();
         session()->put("countCart", $count_cart);
-    
+
         return view("client.order_complete");
     }
 
     public function myOrder()
     {
 
-        $order = Order::where("customer_id","=",request()->cookie('cusId'))->get();
+        $order = Order::where("customer_id", "=", request()->cookie('cusId'))->get();
         $sumOrder = $order->count();
         session()->put("sumOrder", $sumOrder);
 
-        $orders = Order::join("orderdetail","order.id","=","orderdetail.order_id")->join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->where("customer_id","=",request()->cookie('cusId'))->get();
-        foreach($orders as $o){
-            $order_realate = ShoesModel::where("brand_id","=",$o->brand_id)->get();
+        $orders = Order::join("orderdetail", "order.id", "=", "orderdetail.order_id")->join("shoes_size", "orderdetail.shoes_size_id", "=", "shoes_size.size_id")->join("shoes", "shoes_size.shoes_id", "=", "shoes.id")->where("customer_id", "=", request()->cookie('cusId'))->get();
+        foreach ($orders as $o) {
+            $order_realate = ShoesModel::where("brand_id", "=", $o->brand_id)->get();
         }
-        return view("client.my_order",compact('order',"orders","order_realate"));
+        return view("client.my_order", compact('order', "orders", "order_realate"));
     }
-    public function Order_status(Request $request,$id)
+    public function Order_status(Request $request, $id)
     {
         $order = Order::FindOrFail($id);
-        if($request->status==='5'){
+        if ($request->status === '5') {
             $order->status = 5;
             $order->update();
-            session()->flash("message","Hủy Đơn Hàng Thành Công");
+            session()->flash("message", "Hủy Đơn Hàng Thành Công");
         }
-        if($request->status==='1'){
+        if ($request->status === '1') {
             $order->status = 1;
             $order->update();
-            session()->flash("message","Mua lại đơn hàng thành công");
-
+            session()->flash("message", "Mua lại đơn hàng thành công");
         }
-        if($request->status==='2'){
+        if ($request->status === '2') {
             $order->status = 2;
             $order->update();
-            session()->flash("message","Duyệt đơn hàng thành công");
 
+            //gửi mail
+            $name = request()->cookie("namecustomer");
+            $cid = request()->cookie('cusId');
+            $cus = CustomerModel::find($cid);
+            $email = $cus->email;
+            Mail::to($email)->send(new HelloMail($name));
+
+            //
+            session()->flash("message", "Duyệt đơn hàng thành công");
         }
-        if($request->status==='3'){
+        if ($request->status === '3') {
             $order->status = 3;
             $order->update();
-            session()->flash("message","Đơn hàng đang vận chuyển");
-
+            session()->flash("message", "Đơn hàng đang vận chuyển");
         }
-        if($request->status==='4'){
+        if ($request->status === '4') {
             $order->status = 4;
             $order->update();
-            session()->flash("message","Đơn hàng đã hoàn thành");
-
+            session()->flash("message", "Đơn hàng đã hoàn thành");
         }
         return redirect()->back();
     }

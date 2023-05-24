@@ -18,8 +18,8 @@
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form method="post" action="/admin/employees/updateEmployee/{{$employees->emp_id}}" enctype="multipart/form-data">
-                        @method("patch")
+                    <form method="POST" action="/admin/employees/updateEmployee/{{$employees->emp_id}}" enctype="multipart/form-data">
+                        @method("PATCH")
                         @csrf
                         <div class="card-body">
                             <div class="form-group">
@@ -74,7 +74,7 @@
                             <div class="form-group">
                             <label for="exampleInputPassword1">Password:</label>
                       
-                                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Enter password" name="password" value="{{($employees->password)}}">
+                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter password" name="password" value="{{$employees->password}}">
                                 
                             </div>
                             
@@ -98,7 +98,7 @@
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Thêm mới</button>
+                            <button type="submit" class="btn btn-primary">Cập nhật </button>
                         </div>
                     </form>
                 </div>
