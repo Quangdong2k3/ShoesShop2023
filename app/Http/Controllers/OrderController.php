@@ -14,7 +14,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $order = Order::join("customer","order.customer_id","=","customer.id")->groupBy("order.customer_id")->get(["customer.fullname","Customer.gender","customer.phone","customer.username","customer.email","order.id","order.status","order.customer_id"]);
+        $order = Order::join("customer","order.customer_id","=","customer.id")->orderBy("created_at","desc")->get(["order.*"]);
         $orders = Order::all();
 
         $pageTitle = "Quản Lý Order";
@@ -46,17 +46,12 @@ class OrderController extends Controller
     public function show(string $id)
     {
         $pageTitle = "Quản Lý Order Detail";
-        
-        // $order = OrderModel::join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->join("order","orderdetail_id","=","order.id")->whereRaw("order.customer_id=".$id)->get();
-        $order = Order::whereRaw("order.customer_id=".$id)->get();
-        foreach($order as $r){
-            $orders = OrderModel::join("order","orderdetail.order_id","=","order.id")->join("shoes_size","orderdetail.shoes_size_id","=","shoes_size.size_id")->join("orderstatus","order.status","=","orderstatus.status_id")->join("shoes","shoes_size.shoes_id","=","shoes.id")->whereRaw("customer_id=".$id)->orderBy("orderdetail.orderdetail_id")->get(["order.id","shoes.name","orderdetail_id","shoes.price","order.status","status_id","shoes.price","shoes_size.size","shoes_size.quantity","orderstatus.description"]);
-
-            $order_status = Order::join("orderstatus","order.status","=","orderstatus.status_id")->whereRaw("order.status=". $r->status)->get();
-        }
-        // session()->put("orderdetail_id",$id);
-
-       return view("admin.orderdetails.order_details",compact("pageTitle","orders","order_status"));
+     
+        $orders = OrderModel::join('order',"orderdetail.order_id","=","order.id")->join('shoes_size',"shoes_size.size_id","=","shoes_size_id")->join('shoes',"shoes_size.shoes_id","=","shoes.id")->whereRaw("order.id=".$id)->get();
+        $orders_info = Order::join('customer',"order.customer_id","=","customer.id")->join('orderstatus',"order.status","=","orderstatus.status_id")->whereRaw("order.id=".$id)->first();
+        $order_subtotal = Order::whereRaw("id=".$id)->first();
+        // die($order_subtotal);
+       return view("admin.orderdetails.order_details",compact("pageTitle","orders","order_subtotal","orders_info"));
 
     }
 
@@ -82,20 +77,9 @@ class OrderController extends Controller
     public function destroy(string $id)
     {
         
-        $or = Order::whereRaw("customer_id=".$id)->groupBy("customer_id")->get();
-        foreach($or as $o){
-            if(OrderModel::where("order_id","=",$o->id)->get() != null){
-                $statement = "DELETE FROM `oderdetail` WHERE `orderdetail`.`order_id`=".$o->id;
-                DB::statement($statement);
-            }else{
-                break;
-            }
+        $or = Order::whereRaw("id=".$id)->first();
         
-                
-            
-            
-        }
-        
+        // die($or);
         $or->delete();
         
         Session()->flash("success", "Dữ liệu được xóa thành công!!!");

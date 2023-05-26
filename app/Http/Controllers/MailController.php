@@ -15,7 +15,13 @@ class MailController extends Controller
         $name = request()->cookie("namecustomer");
             $cid = request()->cookie('cusId');
             $cus = CustomerModel::find($cid);
+            if($cus->email!=""){
             $email = $cus->email;
+                
+            }else{
+                $email = "nguyenquangdong192@gmail.com";
+            }
+            
             Mail::to($email)->send(new HelloMail($name));
         return view("welcome");
     }

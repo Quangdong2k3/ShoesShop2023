@@ -132,11 +132,13 @@ class CheckoutController extends Controller
         $sumOrder = $order->count();
         session()->put("sumOrder", $sumOrder);
 
-        $orders = Order::join("orderdetail", "order.id", "=", "orderdetail.order_id")->join("shoes_size", "orderdetail.shoes_size_id", "=", "shoes_size.size_id")->join("shoes", "shoes_size.shoes_id", "=", "shoes.id")->where("customer_id", "=", request()->cookie('cusId'))->get();
-        foreach ($orders as $o) {
-            $order_realate = ShoesModel::where("brand_id", "=", $o->brand_id)->get();
-        }
-        return view("client.my_order", compact('order', "orders", "order_realate"));
+        $orders = Order::join("orderdetail", "order.id", "=", "orderdetail.order_id")->join("shoes_size", "orderdetail.shoes_size_id", "=", "shoes_size.size_id")->join("shoes", "shoes_size.shoes_id", "=", "shoes.id")->where("customer_id", "=", request()->cookie('cusId'))->orderBy('order.created_at','desc')->get();
+        // foreach ($orders as $o) {
+        //     $order_relate = ShoesModel::where("brand_id", "=", $o->brand_id)->get();
+        // }
+        // return view("client.my_order", compact('order', "orders", "order_relate"));
+        return view("client.my_order", compact('order', "orders"));
+
     }
     public function Order_status(Request $request, $id)
     {
